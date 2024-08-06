@@ -21,6 +21,5 @@ public class BlogIdentityDbContext : IdentityDbContext<User, Role, Guid>
 
         builder.ApplyConfiguration(new UserConfiguration());
         builder.ApplyConfiguration(new RefreshTokenConfiguration());
-        builder.ApplyConfiguration(new RefreshTokenConfiguration());
     }
 }
