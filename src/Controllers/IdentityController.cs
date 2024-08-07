@@ -20,7 +20,7 @@ using BlogIdentityApi.User.Repositories.Base;
 namespace BlogIdentityApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 public class IdentityController : ControllerBase
 {
     private readonly SignInManager<User.Models.User> signInManager;
@@ -79,7 +79,7 @@ public class IdentityController : ControllerBase
 
             var tokenData = $"{loginDto.Email}:{loginDto.Name}";
             var token = dataProtector.Protect(tokenData);
-            var confirmationLink = Url.Action("ConfirmLogin", "Identity", new { token }, Request.Scheme);
+            var confirmationLink = Url.Action("ConfirmEmailLogin", "Identity", new { token }, Request.Scheme);
             var message = $"Please confirm your login by clicking on the link: {HtmlEncoder.Default.Encode(confirmationLink!)}";
 
             await emailService.SendEmailAsync(loginDto.Email!, "Confirm your login", message);
@@ -92,7 +92,7 @@ public class IdentityController : ControllerBase
         }
     }
 
-    [HttpGet("ConfirmLogin")]
+    [HttpGet]
     public async Task<IActionResult> ConfirmEmailLogin(string token)
     {
         if (string.IsNullOrEmpty(token))
@@ -154,8 +154,8 @@ public class IdentityController : ControllerBase
         });
     }
 
-    [HttpPost("Registration")]
-    public async Task<IActionResult> SignUp([FromForm] RegistrationDto registrationDto)
+    [HttpPost("/api/Identity/Registration")]
+    public async Task<IActionResult> SignUp(RegistrationDto registrationDto)
     {
         try
         {
@@ -171,7 +171,7 @@ public class IdentityController : ControllerBase
 
             var tokenData = $"{registrationDto.Email}:{registrationDto.Name}";
             var token = dataProtector.Protect(tokenData);
-            var confirmationLink = Url.Action("ConfirmRegistration", "Identity", new { token }, Request.Scheme);
+            var confirmationLink = Url.Action("ConfirmEmailRegistration", "Identity", new { token }, Request.Scheme);
             var message = $"Please confirm your registration by clicking on the link: {HtmlEncoder.Default.Encode(confirmationLink!)}";
 
             await emailService.SendEmailAsync(registrationDto.Email!, "Confirm your email", message);
@@ -184,7 +184,7 @@ public class IdentityController : ControllerBase
         }
     }
 
-    [HttpGet("ConfirmRegistration")]
+    [HttpGet]
     public async Task<IActionResult> ConfirmEmailRegistration(string token)
     {
         if (string.IsNullOrEmpty(token))
