@@ -20,7 +20,7 @@ using BlogIdentityApi.User.Repositories.Base;
 namespace BlogIdentityApi.Controllers;
 
 [ApiController]
-[Route("/api/[controller]/[action]")]
+[Route("api/[controller]")]
 public class IdentityController : ControllerBase
 {
     private readonly SignInManager<User.Models.User> signInManager;
@@ -56,7 +56,7 @@ public class IdentityController : ControllerBase
 
     [HttpPost]
     [ActionName("Login")]
-    public async Task<IActionResult> SignIn([FromForm] LoginDto loginDto)
+    public async Task<IActionResult> SignIn(LoginDto loginDto)
     {
         try
         {
@@ -92,8 +92,7 @@ public class IdentityController : ControllerBase
         }
     }
 
-    [HttpGet]
-    [ActionName("ConfirmLogin")]
+    [HttpGet("ConfirmLogin")]
     public async Task<IActionResult> ConfirmEmailLogin(string token)
     {
         if (string.IsNullOrEmpty(token))
@@ -155,8 +154,7 @@ public class IdentityController : ControllerBase
         });
     }
 
-    [HttpPost]
-    [ActionName("Registration")]
+    [HttpPost("Registration")]
     public async Task<IActionResult> SignUp([FromForm] RegistrationDto registrationDto)
     {
         try
@@ -186,8 +184,7 @@ public class IdentityController : ControllerBase
         }
     }
 
-    [HttpGet]
-    [ActionName("ConfirmRegistration")]
+    [HttpGet("ConfirmRegistration")]
     public async Task<IActionResult> ConfirmEmailRegistration(string token)
     {
         if (string.IsNullOrEmpty(token))
