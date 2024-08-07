@@ -13,7 +13,7 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 
         builder
             .HasOne(rt => rt.User)
-            .WithOne()
+            .WithMany()
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
     }

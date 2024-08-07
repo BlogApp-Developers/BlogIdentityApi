@@ -6,7 +6,6 @@ using BlogIdentityApi.RefreshToken.Repositories;
 using BlogIdentityApi.RefreshToken.Entity;
 using BlogIdentityApi.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 public class RefreshTokenEfCoreRepository : IRefreshTokenRepository
 {
