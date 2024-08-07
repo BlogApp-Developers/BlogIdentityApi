@@ -1,4 +1,6 @@
 using BlogIdentityApi.Extensions.ServiceCollectionExtensions;
+using BlogIdentityApi.User.Repositories;
+using BlogIdentityApi.User.Repositories.Base;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddTransient<IUserRepository, UserDapperRepository>();
 
 var app = builder.Build();
 
