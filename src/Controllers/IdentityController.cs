@@ -15,12 +15,13 @@ using BlogIdentityApi.Options;
 using System.ComponentModel.DataAnnotations;
 using BlogIdentityApi.RefreshToken.Query;
 using Microsoft.AspNetCore.Authorization;
+using BlogIdentityApi.User.Repositories.Base;
 
 namespace BlogIdentityApi.Controllers;
 
 [ApiController]
 [Route("/api/[controller]/[action]")]
-public class IdentityController : Controller
+public class IdentityController : ControllerBase
 {
     private readonly SignInManager<User.Models.User> signInManager;
     private readonly UserManager<User.Models.User> userManager;
@@ -30,15 +31,17 @@ public class IdentityController : Controller
     private readonly IEmailService emailService;
     private readonly ISender sender;
     private readonly JwtOptions jwtOptions;
+    private readonly IUserRepository userRepository;
 
-    public IdentityController(ISender sender, 
-        IValidator<LoginDto> userLoginValidator, 
-        SignInManager<User.Models.User> signInManager, 
-        UserManager<User.Models.User> userManager, 
-        IValidator<RegistrationDto> userValidator, 
-        IDataProtectionProvider dataProtectionProvider, 
+    public IdentityController(ISender sender,
+        IValidator<LoginDto> userLoginValidator,
+        SignInManager<User.Models.User> signInManager,
+        UserManager<User.Models.User> userManager,
+        IValidator<RegistrationDto> userValidator,
+        IDataProtectionProvider dataProtectionProvider,
         IEmailService emailService,
-        IOptionsSnapshot<JwtOptions> jwtOptionsSnapshot)
+        IOptionsSnapshot<JwtOptions> jwtOptionsSnapshot,
+        IUserRepository userRepository)
     {
         this.sender = sender;
         this.userLoginValidator = userLoginValidator;
@@ -47,7 +50,8 @@ public class IdentityController : Controller
         this.dataProtector = dataProtectionProvider.CreateProtector("identity");
         this.userValidator = userValidator;
         this.emailService = emailService;
-        this.jwtOptions =jwtOptionsSnapshot.Value;
+        this.jwtOptions = jwtOptionsSnapshot.Value;
+        this.userRepository = userRepository;
     }
 
     [HttpPost]
@@ -79,7 +83,6 @@ public class IdentityController : Controller
             var message = $"Please confirm your login by clicking on the link: {HtmlEncoder.Default.Encode(confirmationLink!)}";
 
             await emailService.SendEmailAsync(loginDto.Email!, "Confirm your login", message);
-            TempData["Email"] = loginDto.Email;
             
             return Ok();
         }
@@ -216,7 +219,7 @@ public class IdentityController : Controller
         }
 
         var foundUser = await userManager.FindByEmailAsync(user.Email);
-
+        await userRepository.CreateAsync(foundUser);
         await signInManager.SignInAsync(foundUser!, isPersistent: true);
 
         var roles = await userManager.GetRolesAsync(foundUser!);
