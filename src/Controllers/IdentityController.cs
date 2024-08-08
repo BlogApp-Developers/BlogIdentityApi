@@ -148,10 +148,10 @@ public class IdentityController : ControllerBase
 
         await sender.Send(createRefreshTokenCommand);
 
-        return Ok(new {
-            refresh = createRefreshTokenCommand.Token,
-            access = tokenStr,
-        });
+        HttpContext.Response.Headers["access"] = tokenStr;
+        HttpContext.Response.Headers["refresh"] = createRefreshTokenCommand.Token.ToString("N");
+        
+        return Redirect($"http://localhost:5234/Blogs");
     }
 
     [HttpPost("/api/Identity/Registration")]
