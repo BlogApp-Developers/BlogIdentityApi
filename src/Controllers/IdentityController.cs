@@ -147,11 +147,9 @@ public class IdentityController : ControllerBase
         };
 
         await sender.Send(createRefreshTokenCommand);
-
-        HttpContext.Response.Headers["access"] = tokenStr;
-        HttpContext.Response.Headers["refresh"] = createRefreshTokenCommand.Token.ToString("N");
         
-        return Redirect($"http://localhost:5234/Blogs");
+        var redirectUrl = $"http://localhost:5234/HandleLoginTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}";
+        return Redirect(redirectUrl);
     }
 
     [HttpPost("/api/Identity/Registration")]
@@ -248,10 +246,8 @@ public class IdentityController : ControllerBase
 
         await sender.Send(createRefreshTokenCommand);
 
-        HttpContext.Response.Headers["access"] = tokenStr;
-        HttpContext.Response.Headers["refresh"] = createRefreshTokenCommand.Token.ToString("N");
-        
-        return Redirect($"http://localhost:5234/choosetags?userId={foundUser!.Id}");
+        var redirectUrl = $"http://localhost:5234/HandleRegistrationTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}&userId={foundUser.Id}";
+        return Redirect(redirectUrl);
     }
 
     [HttpPut]
