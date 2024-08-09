@@ -1,3 +1,5 @@
+namespace BlogIdentityApi.Controllers;
+
 using BlogIdentityApi.Dtos.Models;
 using BlogIdentityApi.Verification.Base;
 using FluentValidation;
@@ -16,15 +18,14 @@ using System.ComponentModel.DataAnnotations;
 using BlogIdentityApi.RefreshToken.Query;
 using Microsoft.AspNetCore.Authorization;
 using BlogIdentityApi.User.Repositories.Base;
-
-namespace BlogIdentityApi.Controllers;
+using BlogIdentityApi.User.Models;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
 public class IdentityController : ControllerBase
 {
-    private readonly SignInManager<User.Models.User> signInManager;
-    private readonly UserManager<User.Models.User> userManager;
+    private readonly SignInManager<User> signInManager;
+    private readonly UserManager<User> userManager;
     private readonly IDataProtector dataProtector;
     private readonly IValidator<RegistrationDto> userValidator;
     private readonly IValidator<LoginDto> userLoginValidator;
@@ -35,8 +36,8 @@ public class IdentityController : ControllerBase
 
     public IdentityController(ISender sender,
         IValidator<LoginDto> userLoginValidator,
-        SignInManager<User.Models.User> signInManager,
-        UserManager<User.Models.User> userManager,
+        SignInManager<User> signInManager,
+        UserManager<User> userManager,
         IValidator<RegistrationDto> userValidator,
         IDataProtectionProvider dataProtectionProvider,
         IEmailService emailService,
@@ -200,7 +201,7 @@ public class IdentityController : ControllerBase
         var email = dataParts[0];
         var name = dataParts[1];
 
-        var user = new User.Models.User
+        var user = new User
         {
             Email = email,
             UserName = name,

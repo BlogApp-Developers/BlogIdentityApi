@@ -22,6 +22,23 @@ namespace BlogIdentityApi.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("BlogIdentityApi.Follow.Models.Follow", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("FollowingId")
+                        .IsRequired()
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FollowingId");
+
+                    b.ToTable("Followers");
+                });
+
             modelBuilder.Entity("BlogIdentityApi.RefreshToken.Entity.RefreshToken", b =>
                 {
                     b.Property<Guid>("Token")
@@ -244,6 +261,17 @@ namespace BlogIdentityApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BlogIdentityApi.Follow.Models.Follow", b =>
+                {
+                    b.HasOne("BlogIdentityApi.User.Models.User", "Following")
+                        .WithMany("Followers")
+                        .HasForeignKey("FollowingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Following");
+                });
+
             modelBuilder.Entity("BlogIdentityApi.RefreshToken.Entity.RefreshToken", b =>
                 {
                     b.HasOne("BlogIdentityApi.User.Models.User", "User")
@@ -304,6 +332,11 @@ namespace BlogIdentityApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BlogIdentityApi.User.Models.User", b =>
+                {
+                    b.Navigation("Followers");
                 });
 #pragma warning restore 612, 618
         }

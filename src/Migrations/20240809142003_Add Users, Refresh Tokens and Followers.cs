@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlogIdentityApi.Migrations
 {
     /// <inheritdoc />
-    public partial class AddUsersRefreshTokens : Migration
+    public partial class AddUsersRefreshTokensandFollowers : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -160,6 +160,24 @@ namespace BlogIdentityApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Followers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    FollowingId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Followers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Followers_AspNetUsers_FollowingId",
+                        column: x => x.FollowingId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RefreshTokens",
                 columns: table => new
                 {
@@ -221,10 +239,14 @@ namespace BlogIdentityApi.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Followers_FollowingId",
+                table: "Followers",
+                column: "FollowingId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId",
                 table: "RefreshTokens",
-                column: "UserId",
-                unique: true);
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -244,6 +266,9 @@ namespace BlogIdentityApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Followers");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
