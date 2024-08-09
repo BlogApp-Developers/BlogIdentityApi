@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlogIdentityApi.Migrations
 {
     [DbContext(typeof(BlogIdentityDbContext))]
-    [Migration("20240806190928_Add Users, RefreshTokens")]
-    partial class AddUsersRefreshTokens
+    [Migration("20240809142003_Add Users, Refresh Tokens and Followers")]
+    partial class AddUsersRefreshTokensandFollowers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,23 @@ namespace BlogIdentityApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("BlogIdentityApi.Follow.Models.Follow", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("FollowingId")
+                        .IsRequired()
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FollowingId");
+
+                    b.ToTable("Followers");
+                });
 
             modelBuilder.Entity("BlogIdentityApi.RefreshToken.Entity.RefreshToken", b =>
                 {
@@ -36,8 +53,7 @@ namespace BlogIdentityApi.Migrations
 
                     b.HasKey("Token");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("RefreshTokens");
                 });
@@ -248,11 +264,22 @@ namespace BlogIdentityApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BlogIdentityApi.Follow.Models.Follow", b =>
+                {
+                    b.HasOne("BlogIdentityApi.User.Models.User", "Following")
+                        .WithMany("Followers")
+                        .HasForeignKey("FollowingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Following");
+                });
+
             modelBuilder.Entity("BlogIdentityApi.RefreshToken.Entity.RefreshToken", b =>
                 {
                     b.HasOne("BlogIdentityApi.User.Models.User", "User")
-                        .WithOne()
-                        .HasForeignKey("BlogIdentityApi.RefreshToken.Entity.RefreshToken", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -308,6 +335,11 @@ namespace BlogIdentityApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BlogIdentityApi.User.Models.User", b =>
+                {
+                    b.Navigation("Followers");
                 });
 #pragma warning restore 612, 618
         }
