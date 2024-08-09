@@ -7,9 +7,21 @@ using BlogIdentityApi.User.Models;
 
 public class Follow
 {
+    public Follow(User followingUser, Guid id)
+    {
+        this.Following = followingUser;
+        this.FollowingId = followingUser.Id;
+        this.FollowerId = id;
+    }
+
+    public Follow() {}
+
     [Key]
     public Guid Id { get; set; }
-    [ForeignKey(name: "FollowerId"), NotNull]
-    public required Guid? FollowingId { get; set; }
+    [NotNull]
+    public Guid FollowerId { get; set; }
+    public User? Follower { get; set; }
+    [ForeignKey(name: "FollowingId"), NotNull]
+    public Guid? FollowingId { get; set; }
     public User? Following { get; set; }
 }

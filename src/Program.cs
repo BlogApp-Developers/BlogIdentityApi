@@ -1,4 +1,6 @@
 using BlogIdentityApi.Extensions.ServiceCollectionExtensions;
+using BlogIdentityApi.Follow.Repositories;
+using BlogIdentityApi.Follow.Repositories.Base;
 using BlogIdentityApi.User.Repositories;
 using BlogIdentityApi.User.Repositories.Base;
 
@@ -19,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<IUserRepository, UserDapperRepository>();
+builder.Services.AddTransient<IFollowRepository, FollowEFRepository>();
 
 var app = builder.Build();
 

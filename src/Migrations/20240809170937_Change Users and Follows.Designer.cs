@@ -3,6 +3,7 @@ using System;
 using BlogIdentityApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BlogIdentityApi.Migrations
 {
     [DbContext(typeof(BlogIdentityDbContext))]
-    partial class BlogIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240809170937_Change Users and Follows")]
+    partial class ChangeUsersandFollows
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
