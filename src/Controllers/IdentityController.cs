@@ -431,7 +431,7 @@ public class IdentityController : ControllerBase
 
             await sender.Send(deleteRefreshTokenCommand);
 
-            return Ok();
+            return Redirect("http://localhost:5234/");
         }
         catch(Exception ex)
         {
@@ -439,6 +439,78 @@ public class IdentityController : ControllerBase
         }
     }
 
+
+    [HttpDelete]
+    [Authorize]
+    public async Task<IActionResult> Delete([Required]Guid refresh)
+    {
+        try
+        {
+            var tokenStr = base.HttpContext.Request.Headers.Authorization.FirstOrDefault();
+
+            if(tokenStr is null) {
+                return base.StatusCode(401);
+            }
+
+            if(tokenStr.StartsWith("Bearer ")) {
+                tokenStr = tokenStr.Substring("Bearer ".Length);
+            }
+
+            var handler = new JwtSecurityTokenHandler();
+            var tokenValidationResult = await handler.ValidateTokenAsync(
+                tokenStr,
+                new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtOptions.Issuer,
+
+                    ValidateAudience = true,
+                    ValidAudience = jwtOptions.Audience,
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(jwtOptions.KeyInBytes)
+                }
+            );
+
+            if(tokenValidationResult.IsValid == false) {
+                return BadRequest(tokenValidationResult.Exception);
+            }
+
+            var token = handler.ReadJwtToken(tokenStr);
+
+            Claim? idClaim = token.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+
+            if(idClaim is null) {
+                return BadRequest($"Token has no claim with type '{ClaimTypes.NameIdentifier}'");
+            }
+
+            Guid.TryParse(idClaim.Value, out Guid userId);
+            var userIdstr = idClaim.Value;
+
+            var foundUser = await userManager.FindByIdAsync(userIdstr);
+
+            if(foundUser is null) {
+                return BadRequest($"User not found by id: '{userId}'");
+            }
+
+            var deleteRefreshTokenCommand = new DeleteRefreshTokenCommand()
+            {
+                Token = refresh,
+                UserId = userId,
+            };
+
+            await sender.Send(deleteRefreshTokenCommand);
+
+            await this.userManager.DeleteAsync(foundUser);
+            await this.userRepository.DeleteAsync(foundUser.Id);
+
+            return Redirect("http://localhost:5234/");
+        }
+        catch(Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
 }
 
 
