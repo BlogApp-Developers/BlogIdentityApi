@@ -149,7 +149,7 @@ public class IdentityController : ControllerBase
 
         await sender.Send(createRefreshTokenCommand);
         
-        var redirectUrl = $"http://localhost:5234/HandleLoginTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}";
+        var redirectUrl = $"http://localhost:5234/HandleLoginTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}&userId={foundUser.Id}";
         return Redirect(redirectUrl);
     }
 
