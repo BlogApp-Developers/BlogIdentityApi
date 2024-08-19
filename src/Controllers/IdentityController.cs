@@ -225,7 +225,8 @@ public class IdentityController : ControllerBase
             .Select(roleStr => new Claim(ClaimTypes.Role, roleStr))
             .Append(new Claim(ClaimTypes.NameIdentifier, foundUser!.Id.ToString()))
             .Append(new Claim(ClaimTypes.Email, foundUser.Email ?? "not set"))
-            .Append(new Claim(ClaimTypes.Name, foundUser.UserName ?? "not set"));
+            .Append(new Claim(ClaimTypes.Name, foundUser.UserName ?? "not set"))
+            .Append(new Claim(ClaimTypes.UserData, foundUser.AvatarUrl ?? "not set"));
 
         var signingKey = new SymmetricSecurityKey(jwtOptions.KeyInBytes);
         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
