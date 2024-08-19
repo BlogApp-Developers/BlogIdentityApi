@@ -80,7 +80,7 @@ public class IdentityController : ControllerBase
 
             var tokenData = $"{loginDto.Email}:{loginDto.Name}";
             var token = dataProtector.Protect(tokenData);
-            var confirmationLink = Url.Action("ConfirmEmailLogin", "Identity", new { token }, Request.Scheme);
+            var confirmationLink = Url.Action ("ConfirmEmailLogin", "Identity", new { token }, Request.Scheme);
             var message = $"Please confirm your login by clicking on the link: {HtmlEncoder.Default.Encode(confirmationLink!)}";
 
             await emailService.SendEmailAsync(loginDto.Email!, "Confirm your login", message);
@@ -125,7 +125,8 @@ public class IdentityController : ControllerBase
             .Select(roleStr => new Claim(ClaimTypes.Role, roleStr))
             .Append(new Claim(ClaimTypes.NameIdentifier, foundUser.Id.ToString()))
             .Append(new Claim(ClaimTypes.Email, foundUser.Email ?? "not set"))
-            .Append(new Claim(ClaimTypes.Name, foundUser.UserName ?? "not set"));
+            .Append(new Claim(ClaimTypes.Name, foundUser.UserName ?? "not set"))
+            .Append(new Claim(ClaimTypes.UserData, foundUser.AvatarUrl ?? "not set"));
 
         var signingKey = new SymmetricSecurityKey(jwtOptions.KeyInBytes);
         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
@@ -149,7 +150,7 @@ public class IdentityController : ControllerBase
 
         await sender.Send(createRefreshTokenCommand);
         
-        var redirectUrl = $"http://localhost:5234/HandleLoginTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}&userId={foundUser.Id}";
+        var redirectUrl = $"http://20.218.137.196/HandleLoginTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}&userId={foundUser.Id}";
         return Redirect(redirectUrl);
     }
 
@@ -205,7 +206,7 @@ public class IdentityController : ControllerBase
         {
             Email = email,
             UserName = name,
-            AvatarUrl = "Assets/UserAvatar/DefaultAvatar.png"
+            AvatarUrl = "https://st3.depositphotos.com/9998432/13335/v/450/depositphotos_133352156-stock-illustration-default-placeholder-profile-icon.jpg"
         };
 
         var result = await userManager.CreateAsync(user);
@@ -247,7 +248,7 @@ public class IdentityController : ControllerBase
 
         await sender.Send(createRefreshTokenCommand);
 
-        var redirectUrl = $"http://localhost:5234/HandleRegistrationTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}&userId={foundUser.Id}";
+        var redirectUrl = $"http://20.218.137.196/HandleRegistrationTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}&userId={foundUser.Id}";
         return Redirect(redirectUrl);
     }
 
@@ -344,7 +345,8 @@ public class IdentityController : ControllerBase
                 .Select(roleStr => new Claim(ClaimTypes.Role, roleStr))
                 .Append(new Claim(ClaimTypes.NameIdentifier, foundUser.Id.ToString()))
                 .Append(new Claim(ClaimTypes.Email, foundUser.Email ?? "not set"))
-                .Append(new Claim(ClaimTypes.Name, foundUser.UserName ?? "not set"));
+                .Append(new Claim(ClaimTypes.Name, foundUser.UserName ?? "not set"))
+                .Append(new Claim(ClaimTypes.UserData, foundUser.AvatarUrl ?? "not set"));
 
             var signingKey = new SymmetricSecurityKey(jwtOptions.KeyInBytes);
             var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
@@ -431,7 +433,7 @@ public class IdentityController : ControllerBase
 
             await sender.Send(deleteRefreshTokenCommand);
 
-            return Redirect("http://localhost:5234/");
+            return Redirect("http://20.218.137.196/");
         }
         catch(Exception ex)
         {
@@ -493,18 +495,17 @@ public class IdentityController : ControllerBase
                 return BadRequest($"User not found by id: '{userId}'");
             }
 
-            var deleteRefreshTokenCommand = new DeleteRefreshTokenCommand()
+            var deleteRangeRefreshTokenCommand = new DeleteRangeRefreshTokenCommand()
             {
-                Token = refresh,
                 UserId = userId,
             };
 
-            await sender.Send(deleteRefreshTokenCommand);
+            await sender.Send(deleteRangeRefreshTokenCommand);
 
             await this.userManager.DeleteAsync(foundUser);
             await this.userRepository.DeleteAsync(foundUser.Id);
 
-            return Redirect("http://localhost:5234/");
+            return Redirect("http://20.218.137.196/");
         }
         catch(Exception ex)
         {
