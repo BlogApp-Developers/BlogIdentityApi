@@ -17,7 +17,6 @@ builder.Services.AddMediatR();
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<IUserRepository, UserDapperRepository>();
 builder.Services.AddTransient<IFollowRepository, FollowEFRepository>();
