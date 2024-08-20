@@ -95,6 +95,7 @@ public class UserDapperRepository : IUserRepository
                                                     ""UserName"" = @UserName,
                                                     ""NormalizedUserName"" = @NormalizedUserName,
                                                     ""Email"" = @Email,
+                                                    ""NormalizedEmail"", 
                                                     ""EmailConfirmed"" = @EmailConfirmed,
                                                     ""PasswordHash"" = @PasswordHash,
                                                     ""SecurityStamp"" = @SecurityStamp,
