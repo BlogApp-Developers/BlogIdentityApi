@@ -22,6 +22,7 @@ public class FollowController : ControllerBase
     }
 
     [Authorize]
+    [HttpPost("api/[controller]/[action]/{id}")]
     public async Task<IActionResult> Follow(Guid? id)
     {
         if (id.HasValue)
@@ -39,6 +40,7 @@ public class FollowController : ControllerBase
     }
 
     [Authorize]
+    [HttpPost("api/[controller]/[action]/{id}")]
     public async Task<IActionResult> Unfollow(Guid? id)
     {
         if (id.HasValue)
