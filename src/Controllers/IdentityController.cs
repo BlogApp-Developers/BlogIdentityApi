@@ -154,7 +154,7 @@ public class IdentityController : ControllerBase
 
         await sender.Send(createRefreshTokenCommand);
         
-        var redirectUrl = $"http://20.218.147.124:5234/HandleLoginTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}&userId={foundUser.Id}";
+        var redirectUrl = $"http://20.218.163.172/HandleLoginTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}&userId={foundUser.Id}";
         return Redirect(redirectUrl);
     }
 
@@ -254,7 +254,7 @@ public class IdentityController : ControllerBase
 
         await sender.Send(createRefreshTokenCommand);
 
-        var redirectUrl = $"http://20.218.147.124:5234/HandleRegistrationTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}&userId={foundUser.Id}";
+        var redirectUrl = $"http://20.218.163.172/HandleRegistrationTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}&userId={foundUser.Id}";
         return Redirect(redirectUrl);
     }
 
@@ -455,7 +455,7 @@ public class IdentityController : ControllerBase
 
             await sender.Send(deleteRefreshTokenCommand);
 
-            return Redirect("http://20.218.147.124:5234/");
+            return Redirect("http://20.123.43.245/");
         }
         catch(Exception ex)
         {
@@ -527,7 +527,7 @@ public class IdentityController : ControllerBase
             await this.userManager.DeleteAsync(foundUser);
             await this.userRepository.DeleteAsync(foundUser.Id);
 
-            return Redirect("http://20.218.147.124:5234/");
+            return Redirect("http://20.123.43.245/");
         }
         catch(Exception ex)
         {
