@@ -19,6 +19,7 @@ using BlogIdentityApi.RefreshToken.Query;
 using Microsoft.AspNetCore.Authorization;
 using BlogIdentityApi.User.Repositories.Base;
 using BlogIdentityApi.User.Models;
+using BlogIdentityApi.Data;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
@@ -33,6 +34,7 @@ public class IdentityController : ControllerBase
     private readonly ISender sender;
     private readonly JwtOptions jwtOptions;
     private readonly IUserRepository userRepository;
+    private readonly BlogIdentityDbContext dbContext;
 
     public IdentityController(ISender sender,
         IValidator<LoginDto> userLoginValidator,
@@ -42,7 +44,8 @@ public class IdentityController : ControllerBase
         IDataProtectionProvider dataProtectionProvider,
         IEmailService emailService,
         IOptionsSnapshot<JwtOptions> jwtOptionsSnapshot,
-        IUserRepository userRepository)
+        IUserRepository userRepository,
+        BlogIdentityDbContext dbContext)
     {
         this.sender = sender;
         this.userLoginValidator = userLoginValidator;
@@ -53,6 +56,7 @@ public class IdentityController : ControllerBase
         this.emailService = emailService;
         this.jwtOptions = jwtOptionsSnapshot.Value;
         this.userRepository = userRepository;
+        this.dbContext = dbContext;
     }
 
     [HttpPost]
@@ -252,6 +256,22 @@ public class IdentityController : ControllerBase
 
         var redirectUrl = $"http://20.218.147.124:5234/HandleRegistrationTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}&userId={foundUser.Id}";
         return Redirect(redirectUrl);
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> GetUser(Guid id)
+    {
+        try
+        {
+            var user = this.dbContext.Users.First(u => u.Id == id);
+
+            return base.Ok(user);
+        }
+        catch (Exception ex)
+        {
+            return base.BadRequest(ex.Message);
+        }
     }
 
     [HttpPut]
