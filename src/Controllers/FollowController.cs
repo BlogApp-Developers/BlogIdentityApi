@@ -49,8 +49,17 @@ public class FollowController : ControllerBase
             {
                 var follow = await this.followRepository.GetByIdAsync(id.Value);
                 this.followRepository.DeleteAsync(follow);
+
+                return base.NoContent();
             }
         }
         return BadRequest();
+    }
+
+    [Authorize]
+    [HttpGet("api/[controller]/[action]")]
+    public async Task<IActionResult> WhoToFollow(Guid? id)
+    {
+        throw new NotImplementedException();
     }
 }
