@@ -37,4 +37,24 @@ public class SettingsController : Controller
 
         return base.NoContent();
     }
+
+    [Authorize]
+    [HttpPut("api/[controller]/[action]")]
+    public async Task<IActionResult> EditProfile(User updatedUser)
+    {
+        try
+        {
+            var user = await this.userManager.GetUserAsync(base.User);
+            user = updatedUser;
+
+            this.dbContext.Users.Update(user);
+            this.dbContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            return base.BadRequest(ex.Message);
+        }
+
+        return base.Ok();
+    }
 }
