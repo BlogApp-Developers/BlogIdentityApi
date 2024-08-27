@@ -1,5 +1,6 @@
 namespace BlogIdentityApi.User.Repositories;
 
+using System.Collections.Generic;
 using BlogIdentityApi.User.Models;
 using BlogIdentityApi.User.Repositories.Base;
 using Dapper;
@@ -83,6 +84,13 @@ public class UserDapperRepository : IUserRepository
         {
             await connection.ExecuteAsync("DELETE FROM public.\"AspNetUsers\" u WHERE u.\"Id\" = @Id", new { Id = id });
         }
+    }
+
+    public async Task<IEnumerable<User>> GetFiveRandomThroughTopics(User user)
+    {
+        using var connection = new NpgsqlConnection(this.connectionString);
+
+        return await connection.QueryAsync<User>(@$"");
     }
 
     public async Task<long> UpdateAsync(User? user)
