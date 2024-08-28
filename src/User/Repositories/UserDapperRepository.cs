@@ -86,11 +86,55 @@ public class UserDapperRepository : IUserRepository
         }
     }
 
-    public async Task<IEnumerable<User>> GetFiveRandomThroughTopics(User user)
+    public async Task<IEnumerable<User>> GetFiveRandomThroughTopics(Guid id)
     {
         using var connection = new NpgsqlConnection(this.connectionString);
 
-        return await connection.QueryAsync<User>(@$"");
+        var topics = await connection.QueryAsync<int>(@$"Select ""TopicId"" From ""UserTopics""
+                                                    Where ""UserId"" = @Id", new { Id = id });
+
+        string topicsStr = "";
+        topicsStr = topicsStr.Insert(topicsStr.Length, string.Join(',', topics));
+
+        var userIds = await connection.QueryAsync<Guid>(@$"Select DISTINCT ""UserId"" From ""UserTopics""
+                                                    Where ""TopicId"" in ({topicsStr}) and ""UserId"" not in (@Id)
+                                                    LIMIT 100", new { Id = id });
+
+        List<string> userIdsPlainStr = [];
+
+        foreach (var userId in userIds)
+        {
+            userIdsPlainStr.Add("'" + userId.ToString() + "'");
+        }
+
+        string userIdsStr = "";
+        userIdsStr = userIdsStr.Insert(userIdsStr.Length, string.Join(',', userIdsPlainStr));
+
+        var users = await connection.QueryAsync<User>(@$"Select * From ""AspNetUsers""
+                                                    Where ""Id"" in ({userIdsStr})");
+
+        List<User> limitedUsers = [];
+        List<int> userPlaces = [];
+
+        var neededNum = 5;
+
+        if (users.Count() < neededNum)
+        {
+            neededNum = users.Count();
+        }
+
+        while (limitedUsers.Count() < neededNum)
+        {
+            var userPlace = Random.Shared.Next(users.Count() - 1);
+
+            if (!userPlaces.Contains(userPlace))
+            {
+                limitedUsers.Add(users.ElementAt(userPlace));
+                userPlaces.Add(userPlace);
+            }
+        }
+
+        return limitedUsers;
     }
 
     public async Task<long> UpdateAsync(User? user)

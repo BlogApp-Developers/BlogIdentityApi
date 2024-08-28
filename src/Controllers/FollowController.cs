@@ -14,11 +14,13 @@ public class FollowController : ControllerBase
 {
     private readonly UserManager<User> userManager;
     private readonly IFollowRepository followRepository;
+    private readonly IUserRepository userRepository;
 
     public FollowController(UserManager<User> userManager, IUserRepository userRepository, IFollowRepository followRepository)
     {
         this.userManager = userManager;
         this.followRepository = followRepository;
+        this.userRepository = userRepository;
     }
 
     [Authorize]
@@ -56,10 +58,18 @@ public class FollowController : ControllerBase
         return BadRequest();
     }
 
-    [Authorize]
+    //[Authorize]
     [HttpGet("api/[controller]/[action]")]
     public async Task<IActionResult> WhoToFollow(Guid? id)
     {
-        throw new NotImplementedException();
+        if (id.HasValue)
+        {
+            var users = await this.userRepository.GetFiveRandomThroughTopics(id.Value);
+            return base.Ok(users);
+        }
+        else
+        {
+            return base.BadRequest();
+        }
     }
 }
