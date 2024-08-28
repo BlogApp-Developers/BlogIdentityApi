@@ -58,7 +58,7 @@ public class FollowController : ControllerBase
         return BadRequest();
     }
 
-    //[Authorize]
+    [Authorize]
     [HttpGet("api/[controller]/[action]")]
     public async Task<IActionResult> WhoToFollow(Guid? id)
     {
