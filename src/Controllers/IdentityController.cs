@@ -82,7 +82,7 @@ public class IdentityController : ControllerBase
                 return BadRequest("Incorrect email!");
             }
 
-            var tokenData = $"{loginDto.Email}:{loginDto.Name}";
+            var tokenData = $"{loginDto.Email}";
             var token = dataProtector.Protect(tokenData);
             var confirmationLink = Url.Action ("ConfirmEmailLogin", "Identity", new { token }, Request.Scheme);
             var message = $"Please confirm your login by clicking on the link: {HtmlEncoder.Default.Encode(confirmationLink!)}";
@@ -106,14 +106,12 @@ public class IdentityController : ControllerBase
         }
 
         var tokenData = dataProtector.Unprotect(token);
-        var dataParts = tokenData.Split(':');
-        if (dataParts.Length != 2)
+        if (tokenData.Length != 2)
         {
             return BadRequest("Invalid token data");
         }
 
-        var email = dataParts[0];
-        var name = dataParts[1];
+        var email = tokenData;
 
         var foundUser = await userManager.FindByEmailAsync(email);
         if (foundUser is null)
