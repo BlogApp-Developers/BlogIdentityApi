@@ -5,17 +5,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using BlogIdentityApi.User.Models;
+using BlogIdentityApi.User.Repositories.Base;
 
 [Route("[controller]")]
 public class SettingsController : Controller
 {
     private readonly BlogIdentityDbContext dbContext;
     private readonly UserManager<User> userManager;
+    private readonly IUserRepository userRepository;
 
-    public SettingsController(BlogIdentityDbContext dbContext, UserManager<User> userManager)
+    public SettingsController(BlogIdentityDbContext dbContext, UserManager<User> userManager, IUserRepository userRepository)
     {
         this.dbContext = dbContext;
         this.userManager = userManager;
+        this.userRepository = userRepository;
     }
 
     [Authorize]
@@ -49,6 +52,8 @@ public class SettingsController : Controller
 
             this.dbContext.Users.Update(user);
             this.dbContext.SaveChanges();
+            await this.userRepository.UpdateAsync(user);
+            
         }
         catch (Exception ex)
         {
