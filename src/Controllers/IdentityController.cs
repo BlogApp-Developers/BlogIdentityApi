@@ -106,10 +106,6 @@ public class IdentityController : ControllerBase
         }
 
         var tokenData = dataProtector.Unprotect(token);
-        if (tokenData.Length != 2)
-        {
-            return BadRequest("Invalid token data");
-        }
 
         var email = tokenData;
 
