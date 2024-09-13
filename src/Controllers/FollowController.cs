@@ -59,7 +59,7 @@ public class FollowController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("api/[controller]/[action]")]
+    [HttpGet("api/[controller]/[action]/{id}")]
     public async Task<IActionResult> WhoToFollow(Guid? id)
     {
         if (id.HasValue)

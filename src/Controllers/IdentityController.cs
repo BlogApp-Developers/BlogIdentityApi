@@ -152,7 +152,7 @@ public class IdentityController : ControllerBase
         return Redirect(redirectUrl);
     }
 
-    [HttpPost("/api/Identity/Registration")]
+    [HttpPost("/api/[controller]/Registration")]
     public async Task<IActionResult> SignUp(RegistrationDto registrationDto)
     {
         try
