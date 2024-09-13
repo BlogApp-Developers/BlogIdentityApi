@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using BlogIdentityApi.Follow.Repositories.Base;
+using BlogIdentityApi.Data;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
@@ -15,6 +16,7 @@ public class FollowController : ControllerBase
     private readonly UserManager<User> userManager;
     private readonly IFollowRepository followRepository;
     private readonly IUserRepository userRepository;
+    private readonly BlogIdentityDbContext dbContext;
 
     public FollowController(UserManager<User> userManager, IUserRepository userRepository, IFollowRepository followRepository)
     {
@@ -66,6 +68,38 @@ public class FollowController : ControllerBase
         {
             var users = await this.userRepository.GetFiveRandomThroughTopics(id.Value);
             return base.Ok(users);
+        }
+        else
+        {
+            return base.BadRequest();
+        }
+    }
+
+    [Authorize]
+    [HttpGet("api/[controller]/[action]/{id}")]
+    public async Task<IActionResult> GetFollowersCount(Guid? id)
+    {
+        if (id.HasValue)
+        {
+            var followers = await this.followRepository.GetsByIdAsync(id.Value);
+
+            return base.Ok(followers.Count());
+        }
+        else
+        {
+            return base.BadRequest();
+        }
+    }
+
+    [Authorize]
+    [HttpGet("api/[controller]/[action]/{id}")]
+    public async Task<IActionResult> GetFollowingCount(Guid? id)
+    {
+        if (id.HasValue)
+        {
+            var following = await this.followRepository.GetsInvertByIdAsync(id.Value);
+
+            return base.Ok(following.Count());
         }
         else
         {

@@ -1,7 +1,6 @@
 namespace BlogIdentityApi.Follow.Repositories;
 
 using System.Threading.Tasks;
-using BlogIdentityApi.Base.Methods;
 using BlogIdentityApi.Data;
 using BlogIdentityApi.Follow.Models;
 using BlogIdentityApi.Follow.Repositories.Base;
@@ -38,5 +37,11 @@ public class FollowEFRepository : IFollowRepository
     {
         var follow = await this.dbContext.Followers.FirstOrDefaultAsync(f => f.Id == id);
         return follow;
+    }
+
+    public async Task<IEnumerable<Follow>> GetsInvertByIdAsync(Guid id)
+    {
+        var follows = this.dbContext.Followers.AsEnumerable().Where(f => f.FollowerId == id);
+        return follows;
     }
 }

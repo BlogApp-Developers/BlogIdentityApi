@@ -53,7 +53,6 @@ public class SettingsController : ControllerBase
             this.dbContext.Users.Update(user);
             this.dbContext.SaveChanges();
             await this.userRepository.UpdateAsync(user);
-            
         }
         catch (Exception ex)
         {
