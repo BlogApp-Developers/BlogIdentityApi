@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using BlogIdentityApi.User.Models;
 using BlogIdentityApi.User.Repositories.Base;
 
-[Route("[controller]")]
-public class SettingsController : Controller
+[Route("api/[controller]/[action]")]
+public class SettingsController : ControllerBase
 {
     private readonly BlogIdentityDbContext dbContext;
     private readonly UserManager<User> userManager;
@@ -22,7 +22,7 @@ public class SettingsController : Controller
     }
 
     [Authorize]
-    [HttpPut("api/[controller]/[action]")]
+    [HttpPut]
     public async Task<IActionResult> ChangeEmailSend(bool toSend)
     {
         try
@@ -42,7 +42,7 @@ public class SettingsController : Controller
     }
 
     [Authorize]
-    [HttpPut("api/[controller]/[action]")]
+    [HttpPut]
     public async Task<IActionResult> EditProfile(User updatedUser)
     {
         try
