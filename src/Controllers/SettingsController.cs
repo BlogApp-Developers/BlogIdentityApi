@@ -47,12 +47,9 @@ public class SettingsController : ControllerBase
     {
         try
         {
-            var user = await this.userManager.GetUserAsync(base.User);
-            user = updatedUser;
-
-            this.dbContext.Users.Update(user);
+            this.dbContext.Users.Update(updatedUser);
             this.dbContext.SaveChanges();
-            await this.userRepository.UpdateAsync(user);
+            await this.userRepository.UpdateAsync(updatedUser);
         }
         catch (Exception ex)
         {
