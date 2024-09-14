@@ -61,18 +61,18 @@ public class FollowController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("/api/[controller]/[action]/{id}")]
-    public async Task<IActionResult> WhoToFollow(Guid? id)
+    [HttpGet("/api/[controller]/[action]")]
+    public async Task<IActionResult> WhoToFollow()
     {
-        if (id.HasValue)
+        var user = await this.userManager.GetUserAsync(base.User);
+
+        if (user == null)
         {
-            var users = await this.userRepository.GetFiveRandomThroughTopics(id.Value);
-            return base.Ok(users);
+            return base.Forbid();
         }
-        else
-        {
-            return base.BadRequest();
-        }
+
+        var users = await this.userRepository.GetFiveRandomThroughTopics(user.Id);
+        return base.Ok(users);
     }
 
     [Authorize]

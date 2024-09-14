@@ -26,7 +26,7 @@ public class UserRabbitMqRepository : IUserRepository
                 Password = optionsSnapshot.Value.Password
             };
         this.dbContext = dbContext;
-        this.connectionString = configuration.GetConnectionString("PostgreSqlDev");
+        this.connectionString = configuration.GetConnectionString("BlogWebApiDb");
     }
 
     public async Task CreateAsync(User? newUser)
@@ -120,19 +120,21 @@ public class UserRabbitMqRepository : IUserRepository
 
         var neededNum = 5;
 
-        if (users.Count() < neededNum)
+        if (users.Count() <= neededNum)
         {
-            neededNum = users.Count();
+            limitedUsers.AddRange(users);
         }
-
-        while (limitedUsers.Count() < neededNum)
+        else
         {
-            var userPlace = Random.Shared.Next(users.Count() - 1);
-
-            if (!userPlaces.Contains(userPlace))
+            while (limitedUsers.Count() < neededNum)
             {
-                limitedUsers.Add(users.ElementAt(userPlace));
-                userPlaces.Add(userPlace);
+                var userPlace = Random.Shared.Next(users.Count() - 1);
+
+                if (!userPlaces.Contains(userPlace))
+                {
+                    limitedUsers.Add(users.ElementAt(userPlace));
+                    userPlaces.Add(userPlace);
+                }
             }
         }
 
