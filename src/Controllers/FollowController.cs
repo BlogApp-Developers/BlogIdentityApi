@@ -10,7 +10,7 @@ using BlogIdentityApi.Follow.Repositories.Base;
 using BlogIdentityApi.Data;
 
 [ApiController]
-[Route("api/[controller]/[action]")]
+[Route("/api/[controller]/[action]")]
 public class FollowController : ControllerBase
 {
     private readonly UserManager<User> userManager;
@@ -26,7 +26,7 @@ public class FollowController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("api/[controller]/[action]/{id}")]
+    [HttpPost("/api/[controller]/[action]/{id}")]
     public async Task<IActionResult> Follow(Guid? id)
     {
         if (id.HasValue)
@@ -44,7 +44,7 @@ public class FollowController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("api/[controller]/[action]/{id}")]
+    [HttpPost("/api/[controller]/[action]/{id}")]
     public async Task<IActionResult> Unfollow(Guid? id)
     {
         if (id.HasValue)
@@ -61,7 +61,7 @@ public class FollowController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("api/[controller]/[action]/{id}")]
+    [HttpGet("/api/[controller]/[action]/{id}")]
     public async Task<IActionResult> WhoToFollow(Guid? id)
     {
         if (id.HasValue)
@@ -76,7 +76,7 @@ public class FollowController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("api/[controller]/[action]/{id}")]
+    [HttpGet("/api/[controller]/[action]/{id}")]
     public async Task<IActionResult> GetFollowersCount(Guid? id)
     {
         if (id.HasValue)
@@ -92,7 +92,7 @@ public class FollowController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("api/[controller]/[action]/{id}")]
+    [HttpGet("/api/[controller]/[action]/{id}")]
     public async Task<IActionResult> GetFollowingCount(Guid? id)
     {
         if (id.HasValue)
@@ -108,7 +108,7 @@ public class FollowController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("api/[controller]/[action]/{id}")]
+    [HttpGet("/api/[controller]/[action]/{id}")]
     public async Task<IActionResult> GetFollowers(Guid? id)
     {
         if (id.HasValue)
@@ -124,7 +124,7 @@ public class FollowController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("api/[controller]/[action]/{id}")]
+    [HttpGet("/api/[controller]/[action]/{id}")]
     public async Task<IActionResult> GetFollowings(Guid? id)
     {
         if (id.HasValue)
