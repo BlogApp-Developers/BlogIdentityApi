@@ -153,7 +153,7 @@ public class IdentityController : ControllerBase
     }
 
     [HttpPost("/api/[controller]/Registration")]
-    public async Task<IActionResult> SignUp(RegistrationDto registrationDto)
+    public async Task<IActionResult> SignUp(RegistrationDto registrationDto, IFormFile image)
     {
         try
         {
