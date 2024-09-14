@@ -76,7 +76,7 @@ public class UserRabbitMqRepository : IUserRepository
             autoDelete: false
         );
 
-        var userJson = "\"RabbitMQAction\": " + rabbitMqAction + "\n" + JsonSerializer.Serialize(deletingUser);
+        var userJson = "\"RabbitMQAction\": " + rabbitMqAction + "&" + JsonSerializer.Serialize(deletingUser);
 
         var messageInBytes = Encoding.Unicode.GetBytes(userJson);
 
@@ -155,7 +155,7 @@ public class UserRabbitMqRepository : IUserRepository
             autoDelete: false
         );
 
-        var userJson = "\"RabbitMQAction\": " + rabbitMqAction + "\n" + JsonSerializer.Serialize(user);
+        var userJson = "\"RabbitMQAction\": " + rabbitMqAction + "&" + JsonSerializer.Serialize(user);
 
         var messageInBytes = Encoding.Unicode.GetBytes(userJson);
 
