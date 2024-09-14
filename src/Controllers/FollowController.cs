@@ -32,14 +32,12 @@ public class FollowController : ControllerBase
     {
         if (id.HasValue)
         {
-            if (this.userManager.FindByIdAsync(id.ToString()) != null)
-            {
-                var followingUser = await this.userManager.GetUserAsync(base.User);
-                var follow = new Follow(followingUser, id.Value);
-                await followRepository.CreateAsync(follow);
+            var followingUser = await this.userManager.GetUserAsync(base.User);
+            var follow = new Follow(followingUser, id.Value);
+            await followRepository.CreateAsync(follow);
                 
-                return Ok();
-            }
+            return Ok();
+            
         }
         return BadRequest();
     }
