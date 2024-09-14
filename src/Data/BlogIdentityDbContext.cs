@@ -16,7 +16,7 @@ public class BlogIdentityDbContext : IdentityDbContext<User, Role, Guid>
         : base(options) {}
 
     public DbSet<RefreshToken> RefreshTokens { get; set; }
-    public DbSet<Follow> Followers { get;}
+    public DbSet<Follow> Followers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

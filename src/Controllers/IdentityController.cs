@@ -252,7 +252,7 @@ public class IdentityController : ControllerBase
         return Redirect(redirectUrl);
     }
 
-    [HttpGet]
+    [HttpGet("/api/[controller]/[action]/{id}")]
     [Authorize]
     public async Task<IActionResult> GetUser(Guid id)
     {

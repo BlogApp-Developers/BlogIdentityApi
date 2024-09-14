@@ -18,11 +18,12 @@ public class FollowController : ControllerBase
     private readonly IUserRepository userRepository;
     private readonly BlogIdentityDbContext dbContext;
 
-    public FollowController(UserManager<User> userManager, IUserRepository userRepository, IFollowRepository followRepository)
+    public FollowController(UserManager<User> userManager, IUserRepository userRepository, IFollowRepository followRepository, BlogIdentityDbContext dbContext)
     {
         this.userManager = userManager;
         this.followRepository = followRepository;
         this.userRepository = userRepository;
+        this.dbContext = dbContext;
     }
 
     [Authorize]
