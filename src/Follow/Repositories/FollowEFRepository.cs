@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using BlogIdentityApi.Data;
 using BlogIdentityApi.Follow.Models;
 using BlogIdentityApi.Follow.Repositories.Base;
+using BlogIdentityApi.User.Models;
 using Microsoft.EntityFrameworkCore;
 
 public class FollowEFRepository : IFollowRepository
@@ -29,8 +30,8 @@ public class FollowEFRepository : IFollowRepository
 
     public async Task<IEnumerable<Follow>> GetsByIdAsync(Guid id)
     {
-        var follows = this.dbContext.Followers.AsEnumerable().Where(f => f.FollowingId == id);
-        return follows;
+        var followings = this.dbContext.Followers.AsEnumerable().Where(f => f.FollowingId == id);
+        return followings;
     }
 
     public async Task<Follow> GetByIdAsync(Guid id)
@@ -41,7 +42,33 @@ public class FollowEFRepository : IFollowRepository
 
     public async Task<IEnumerable<Follow>> GetsInvertByIdAsync(Guid id)
     {
-        var follows = this.dbContext.Followers.AsEnumerable().Where(f => f.FollowerId == id);
-        return follows;
+        var followers = this.dbContext.Followers.AsEnumerable().Where(f => f.FollowerId == id);
+        return followers;
+    }
+
+    public async Task<IEnumerable<User>> GetFollowersByIdAsync(Guid id)
+    {
+        var followers = await this.GetsInvertByIdAsync(id);
+        var followersAccounts = new List<User>();
+
+        foreach (var follower in followers)
+        {
+            followersAccounts.Add(dbContext.Users.First(u => u.Id == follower.FollowerId));
+        }
+
+        return followersAccounts;
+    }
+
+    public async Task<IEnumerable<User>> GetFollowingsByIdAsync(Guid id)
+    {
+        var followings = await this.GetsByIdAsync(id);
+        var followingsAccounts = new List<User>();
+
+        foreach (var following in followings)
+        {
+            followingsAccounts.Add(dbContext.Users.First(u => u.Id == following.FollowingId));
+        }
+
+        return followingsAccounts;
     }
 }
