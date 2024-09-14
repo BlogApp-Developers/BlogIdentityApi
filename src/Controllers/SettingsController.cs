@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using BlogIdentityApi.User.Models;
 using BlogIdentityApi.User.Repositories.Base;
+using Azure.Storage.Blobs;
 
 [Route("api/[controller]/[action]")]
 public class SettingsController : ControllerBase
@@ -43,10 +44,28 @@ public class SettingsController : ControllerBase
 
     [Authorize]
     [HttpPut]
-    public async Task<IActionResult> EditProfile(User updatedUser)
+    public async Task<IActionResult> EditProfile(User updatedUser, IFormFile avatar)
     {
         try
         {
+            var extension = Path.GetExtension(avatar.FileName);
+
+            var blobName = $"{updatedUser.Id}{extension}";
+            var connectionString = "";
+            var blobServiceClient = new BlobServiceClient(connectionString);
+            string containerName = "usersavatar";
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+            var blobClient = containerClient.GetBlobClient(blobName);
+
+            using (var stream = avatar.OpenReadStream())
+            {
+                await blobClient.UploadAsync(stream, true);
+            }
+
+            var avatarUrl = blobClient.Uri.ToString();
+            updatedUser.AvatarUrl = avatarUrl;
+
             this.dbContext.Users.Update(updatedUser);
             this.dbContext.SaveChanges();
             await this.userRepository.UpdateAsync(updatedUser);

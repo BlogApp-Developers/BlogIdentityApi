@@ -1,6 +1,7 @@
 using BlogIdentityApi.Extensions.ServiceCollectionExtensions;
 using BlogIdentityApi.Follow.Repositories;
 using BlogIdentityApi.Follow.Repositories.Base;
+using BlogIdentityApi.Options;
 using BlogIdentityApi.User.Repositories;
 using BlogIdentityApi.User.Repositories.Base;
 
@@ -13,12 +14,14 @@ builder.Services.InitCors();
 builder.Services.RegisterDpInjection();
 builder.Services.AddValidators();
 builder.Services.AddMediatR();
+var rabbitMqSection = builder.Configuration.GetSection("RabbitMq");
+builder.Services.Configure<RabbitMqOptions>(rabbitMqSection);
 
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddTransient<IUserRepository, UserDapperRepository>();
+builder.Services.AddTransient<IUserRepository, UserRabbitMqRepository>();
 builder.Services.AddTransient<IFollowRepository, FollowEFRepository>();
 
 var app = builder.Build();
