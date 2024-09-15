@@ -8,6 +8,13 @@ using BlogIdentityApi.User.Models;
 using BlogIdentityApi.User.Repositories.Base;
 using Azure.Storage.Blobs;
 using BlogIdentityApi.Dtos.Models;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using BlogIdentityApi.RefreshToken.Command;
+using BlogIdentityApi.Options;
+using MediatR;
+using Microsoft.Extensions.Options;
 
 [Route("api/[controller]/[action]")]
 public class SettingsController : ControllerBase
@@ -15,12 +22,16 @@ public class SettingsController : ControllerBase
     private readonly BlogIdentityDbContext dbContext;
     private readonly UserManager<User> userManager;
     private readonly IUserRepository userRepository;
+    private readonly JwtOptions jwtOptions;
+    private readonly ISender sender;
 
-    public SettingsController(BlogIdentityDbContext dbContext, UserManager<User> userManager, IUserRepository userRepository)
+    public SettingsController(BlogIdentityDbContext dbContext, UserManager<User> userManager, IUserRepository userRepository, ISender sender, IOptionsSnapshot<JwtOptions> jwtOptionsSnapshot)
     {
         this.dbContext = dbContext;
         this.userManager = userManager;
         this.userRepository = userRepository;
+        this.sender = sender;
+        this.jwtOptions = jwtOptionsSnapshot.Value;
     }
 
     [Authorize]
@@ -73,12 +84,44 @@ public class SettingsController : ControllerBase
             this.dbContext.Users.Update(user);
             this.dbContext.SaveChanges();
             await this.userRepository.UpdateAsync(user);
+
+            var roles = await userManager.GetRolesAsync(user);
+
+            var claims = roles
+                .Select(roleStr => new Claim(ClaimTypes.Role, roleStr))
+                .Append(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()))
+                .Append(new Claim(ClaimTypes.Email, user.Email ?? "not set"))
+                .Append(new Claim(ClaimTypes.Name, user.UserName ?? "not set"))
+                .Append(new Claim(ClaimTypes.UserData, user.AvatarUrl ?? "not set"));
+
+            var signingKey = new SymmetricSecurityKey(jwtOptions.KeyInBytes);
+            var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+
+            var jwtToken = new JwtSecurityToken(
+                issuer: jwtOptions.Issuer,
+                audience: jwtOptions.Audience,
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(jwtOptions.LifeTimeInMinutes),
+                signingCredentials: signingCredentials
+            );
+
+            var handler = new JwtSecurityTokenHandler();
+            var tokenStr = handler.WriteToken(jwtToken);
+
+
+            var createRefreshTokenCommand = new CreateRefreshTokenCommand {
+                UserId = user.Id,
+                Token = Guid.NewGuid(),
+            };
+
+            await sender.Send(createRefreshTokenCommand);
+
+            var redirectUrl = $"http://localhost:5234/HandleLoginTokens?access={tokenStr}&refresh={createRefreshTokenCommand.Token.ToString("N")}&userId={user.Id}";
+            return Redirect(redirectUrl);
         }
         catch (Exception ex)
         {
             return base.BadRequest(ex.Message);
         }
-
-        return base.Ok();
     }
 }
