@@ -134,4 +134,25 @@ public class FollowController : ControllerBase
             return base.BadRequest();
         }
     }
+
+    [Authorize]
+    [HttpGet("/api/[controller]/[action]/{id}")]
+    public async Task<IActionResult> IsFollowing(Guid? id)
+    {
+        if (id.HasValue)
+        {
+            var user = await this.userManager.GetUserAsync(base.User);
+
+            if (user == null)
+            {
+                return base.Forbid();
+            }
+
+            return base.Ok(this.followRepository.IsFollowing(user.Id, id.Value));
+        }
+        else
+        {
+            return base.BadRequest();
+        }
+    }
 }

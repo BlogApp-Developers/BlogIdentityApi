@@ -10,4 +10,5 @@ public interface IFollowRepository : ICreateAsync<Follow>,
                                      IGetByIdAsync<Follow>, 
                                      IGetsInvertByIdAsync<Follow>, 
                                      IGetFollowersByIdAsync<User>, 
-                                     IGetFollowingsByIdAsync<User> {}
+                                     IGetFollowingsByIdAsync<User>,
+                                     IIsFollowing {}
