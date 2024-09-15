@@ -48,13 +48,10 @@ public class FollowController : ControllerBase
     {
         if (id.HasValue)
         {
-            if (this.userManager.FindByIdAsync(id.ToString()) != null)
-            {
                 var follow = await this.followRepository.GetByIdAsync(id.Value);
                 this.followRepository.DeleteAsync(follow);
 
                 return base.NoContent();
-            }
         }
         return BadRequest();
     }
@@ -80,7 +77,7 @@ public class FollowController : ControllerBase
     {
         if (id.HasValue)
         {
-            var followers = await this.followRepository.GetsByIdAsync(id.Value);
+            var followers = await this.followRepository.GetsInvertByIdAsync(id.Value);
 
             return base.Ok(followers.Count());
         }
@@ -96,7 +93,7 @@ public class FollowController : ControllerBase
     {
         if (id.HasValue)
         {
-            var following = await this.followRepository.GetsInvertByIdAsync(id.Value);
+            var following = await this.followRepository.GetsByIdAsync(id.Value);
 
             return base.Ok(following.Count());
         }
