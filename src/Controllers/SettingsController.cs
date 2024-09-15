@@ -51,7 +51,7 @@ public class SettingsController : ControllerBase
             var extension = Path.GetExtension(avatar.FileName);
 
             var blobName = $"{updatedUser.Id}{extension}";
-            var connectionString = "https://blogteamstorage.blob.core.windows.net";
+            var connectionString = "DefaultEndpointsProtocol=https;AccountName=blogteamstorage;AccountKey=Jj3XzYJg5sReLiUkj+1X6eap4T8DHLyY3uwbR9OwsqAx+q+HSHgdvKz0EPRWKgUOYChVJ6GCDFiQ+AStSO+mpg==;EndpointSuffix=core.windows.net";
             var blobServiceClient = new BlobServiceClient(connectionString);
             string containerName = "useravatar";
             var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
