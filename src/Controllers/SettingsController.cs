@@ -53,7 +53,7 @@ public class SettingsController : ControllerBase
             var blobName = $"{updatedUser.Id}{extension}";
             var connectionString = "https://blogteamstorage.blob.core.windows.net";
             var blobServiceClient = new BlobServiceClient(connectionString);
-            string containerName = "usersavatar";
+            string containerName = "useravatar";
             var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
             var blobClient = containerClient.GetBlobClient(blobName);
