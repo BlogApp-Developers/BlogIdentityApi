@@ -71,4 +71,15 @@ public class FollowEFRepository : IFollowRepository
 
         return followingsAccounts;
     }
+
+    public bool IsFollowing(Guid personalId, Guid userId)
+    {
+        var follower = this.dbContext.Followers.FirstOrDefault(f => f.FollowingId == personalId && f.FollowerId == userId);
+
+        if (follower != null)
+        {
+            return true;
+        }
+        return false;
+    }
 }
