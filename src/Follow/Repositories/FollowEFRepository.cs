@@ -34,9 +34,9 @@ public class FollowEFRepository : IFollowRepository
         return followings;
     }
 
-    public async Task<Follow> GetByIdAsync(Guid id)
+    public async Task<Follow> GetByIdAsync(Guid personalId, Guid userId)
     {
-        var follow = await this.dbContext.Followers.FirstOrDefaultAsync(f => f.Id == id);
+        var follow = await this.dbContext.Followers.FirstOrDefaultAsync(f => f.FollowingId == personalId && f.FollowerId == userId);
         return follow;
     }
 

@@ -48,10 +48,17 @@ public class FollowController : ControllerBase
     {
         if (id.HasValue)
         {
-                var follow = await this.followRepository.GetByIdAsync(id.Value);
-                this.followRepository.DeleteAsync(follow);
+            var user = await this.userManager.GetUserAsync(base.User);
 
-                return base.NoContent();
+            if (user == null)
+            {
+                return base.Forbid();
+            }
+
+            var follow = await this.followRepository.GetByIdAsync(user.Id, id.Value);
+            await this.followRepository.DeleteAsync(follow);
+
+            return base.NoContent();
         }
         return BadRequest();
     }
