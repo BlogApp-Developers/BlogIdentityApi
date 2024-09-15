@@ -6,6 +6,6 @@ public interface IUserRepository
 {
     Task CreateAsync(User? newUser);
     Task DeleteAsync(Guid? id);
-    Task UpdateAsync(User? user);
+    Task<long> UpdateAsync(User? user);
     Task<IEnumerable<User>> GetFiveRandomThroughTopics(Guid id);
 }
