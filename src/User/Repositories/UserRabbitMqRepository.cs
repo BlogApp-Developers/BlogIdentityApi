@@ -20,11 +20,12 @@ public class UserRabbitMqRepository : IUserRepository
     {
         this.rabbitMqConnectionFactory = new ConnectionFactory() {
                 HostName = optionsSnapshot.Value.HostName,
+                Port = optionsSnapshot.Value.Port,
                 UserName = optionsSnapshot.Value.UserName,
                 Password = optionsSnapshot.Value.Password
             };
         this.dbContext = dbContext;
-        this.connectionString = configuration.GetConnectionString("BlogWebApiDb");
+        this.connectionString = configuration.GetConnectionString("PostgreSqlDev");
     }
     public async Task CreateAsync(User? newUser)
     {
@@ -38,7 +39,7 @@ public class UserRabbitMqRepository : IUserRepository
             exclusive: false,
             autoDelete: false
         );
-        var userJson = "\"RabbitMQAction\": " + rabbitMqAction + "&" + JsonSerializer.Serialize(newUser);
+        var userJson = JsonSerializer.Serialize(rabbitMqAction) + "&" + JsonSerializer.Serialize(newUser);
         var messageInBytes = Encoding.Unicode.GetBytes(userJson);
         channel.BasicPublish(
             exchange: string.Empty,
